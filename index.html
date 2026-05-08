@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitMaster UAP | Guía Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar-item.active { @apply bg-blue-600 text-white shadow-lg shadow-blue-900/20; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+        code { font-family: 'Fira Code', monospace; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-200 z-[60]">
+        <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500 w-0"></div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        
+        <aside class="w-full lg:w-80 bg-slate-900 text-slate-300 p-6 lg:fixed lg:h-full z-50 shadow-2xl">
+            <div class="flex items-center gap-3 mb-10 px-2">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-700 p-2.5 rounded-xl shadow-lg">
+                    <i class="fa-brands fa-git-alt text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white leading-none">GitMaster</h1>
+                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Edición Académica</span>
+                </div>
+            </div>
+
+            <nav class="space-y-1.5" id="sidebar-nav">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">Navegación</p>
+                </nav>
+
+            <div class="mt-10 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                <p class="text-xs text-slate-400 mb-2">Progreso del curso</p>
+                <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                    <div id="inner-progress" class="bg-blue-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <p id="progress-text" class="text-[10px] mt-2 text-right font-bold text-blue-400">0% Completado</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 lg:ml-80 p-6 md:p-12 lg:p-20 max-w-5xl mx-auto">
+            
+            <div id="content-area">
+                </div>
+
+            <footer class="mt-20 pt-10 border-t border-slate-200 flex justify-between">
+                <button id="prevBtn" class="px-6 py-2 rounded-lg font-bold text-slate-400 hover:text-blue-600 transition-colors">Anterior</button>
+                <button id="nextBtn" class="px-8 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-lg transition-all">Siguiente</button>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const sections = [
+            { 
+                id: 'inicio', 
+                title: 'Bienvenida', 
+                icon: 'fa-house',
+                content: `
+                    <h2 class="text-4xl font-black text-slate-900 mb-6">Mueve tu código como un <span class="text-blue-600">Pro</span>.</h2>
+                    <p class="text-xl text-slate-600 mb-10 leading-relaxed">Olvídate de los pendrives. Aprenderás a usar Git y GitHub para que tu código sea inmortal y portable.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                            <i class="fa-solid fa-code text-blue-500 text-2xl mb-4"></i>
+                            <h4 class="font-bold mb-2">Código Limpio</h4>
+                            <p class="text-sm text-slate-500">Solo subimos lo necesario. Nada de carpetas pesadas como venv.</p>
+                        </div>
+                        <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                            <i class="fa-solid fa-cloud text-purple-500 text-2xl mb-4"></i>
+                            <h4 class="font-bold mb-2">Acceso Total</h4>
+                            <p class="text-sm text-slate-500">Tu trabajo disponible en cualquier PC del mundo con internet.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'instalacion',
+                title: 'Instalación',
+                icon: 'fa-download',
+                content: `
+                    <h2 class="text-3xl font-bold mb-6">1. El Motor: Instalar Git</h2>
+                    <p class="mb-6">Descarga el instalador oficial. Recuerda dar "Next" a todo.</p>
+                    <div class="bg-slate-900 rounded-2xl p-8 mb-8">
+                        <p class="text-blue-400 font-mono mb-4"># Verifica la instalación</p>
+                        <div class="flex justify-between items-center text-slate-300 bg-slate-800 p-4 rounded-lg">
+                            <code>git --version</code>
+                            <button onclick="copy('git --version')" class="hover:text-white"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 text-amber-800 text-sm">
+                        <strong>Nota:</strong> Si instalaste Git con la terminal abierta, ciérrala y ábrela de nuevo para que funcione.
+                    </div>
+                `
+            },
+            {
+                id: 'identidad',
+                title: 'Identidad',
+                icon: 'fa-id-card',
+                content: `
+                    <h2 class="text-3xl font-bold mb-6">2. Firma tu trabajo</h2>
+                    <p class="mb-6">Dile a Git quién eres. Esto solo se hace una vez por computadora.</p>
+                    <div class="space-y-4">
+                        <div class="bg-slate-900 rounded-2xl p-6">
+                            <code class="text-slate-300 block mb-2">git config --global user.email "tu@correo.com"</code>
+                            <code class="text-slate-300 block">git config --global user.name "Tu Nombre"</code>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'flujo',
+                title: 'Flujo Real',
+                icon: 'fa-rotate',
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-blue-600">3. El Ciclo de Oro</h2>
+                    <p class="mb-6">Esta es la secuencia que repetirás siempre que quieras guardar cambios:</p>
+                    <div class="grid gap-4">
+                        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <span class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">1</span>
+                            <div><p class="font-bold">git add .</p><p class="text-xs text-slate-500">Prepara los archivos.</p></div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <span class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">2</span>
+                            <div><p class="font-bold">git commit -m "Explicación"</p><p class="text-xs text-slate-500">Toma la foto del progreso.</p></div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                            <span class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">3</span>
+                            <div><p class="font-bold">git push</p><p class="text-xs text-slate-500">Sube todo a la nube.</p></div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'trouble',
+                title: 'Solución de Errores',
+                icon: 'fa-triangle-exclamation',
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-orange-600 font-black italic">SOS: ¿Algo falló?</h2>
+                    <div class="space-y-6">
+                        <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                            <h4 class="font-bold text-orange-900 mb-2 underline italic">"src refspec main does not match any"</h4>
+                            <p class="text-sm text-orange-800">No has hecho ningún commit todavía. Ejecuta <code class="bg-white px-1">git commit -m "inicio"</code> antes de intentar subir.</p>
+                        </div>
+                        <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                            <h4 class="font-bold text-orange-900 mb-2 underline italic">"remote origin already exists"</h4>
+                            <p class="text-sm text-orange-800">Ya habías conectado esta carpeta. Si quieres cambiar la dirección usa: <code class="bg-white px-1">git remote set-url origin [URL]</code>.</p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function renderSidebar() {
+            const nav = document.getElementById('sidebar-nav');
+            nav.innerHTML = '<p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">Navegación</p>';
+            sections.forEach((s, i) => {
+                const btn = document.createElement('button');
+                btn.className = `sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-medium ${i === currentIndex ? 'active bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'}`;
+                btn.innerHTML = `<i class="fa-solid ${s.icon} w-5"></i> ${s.title}`;
+                btn.onclick = () => goToSection(i);
+                nav.appendChild(btn);
+            });
+        }
+
+        function goToSection(index) {
+            currentIndex = index;
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `<div class="animate-in fade-in duration-500">${sections[currentIndex].content}</div>`;
+            
+            // Actualizar progreso
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('inner-progress').style.width = `${progress}%`;
+            document.getElementById('progress-text').innerText = `${Math.round(progress)}% Completado`;
+
+            renderSidebar();
+            
+            // Botones footer
+            document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').innerText = index === sections.length - 1 ? '¡Finalizar!' : 'Siguiente';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('nextBtn').onclick = () => {
+            if(currentIndex < sections.length - 1) goToSection(currentIndex + 1);
+            else alert("¡Felicidades Eduardo! Has completado la guía. Ya puedes compartirla con tus alumnos.");
+        };
+        
+        document.getElementById('prevBtn').onclick = () => {
+            if(currentIndex > 0) goToSection(currentIndex - 1);
+        };
+
+        function copy(text) {
+            navigator.clipboard.writeText(text);
+            alert("Comando copiado");
+        }
+
+        // Iniciar
+        goToSection(0);
+    </script>
+</body>
+</html>
